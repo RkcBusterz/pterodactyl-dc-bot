@@ -11,9 +11,11 @@ bot = commands.Bot(command_prefix="ptero", intents=intents)
 async def load_cogs():
     try:
         await bot.load_extension("cogs.servers")
-        print("Loaded cog: admin")
+        print("Loaded cog: servers")
+        await bot.load_extension("cogs.users")
+        print("Loaded cog: users")
     except Exception as e:
-        print(f"Failed to load cog 'admin': {e}")
+        print(f"Failed to load cog: {e}")
 
 @bot.event
 async def on_ready():
