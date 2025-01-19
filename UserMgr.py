@@ -29,6 +29,24 @@ class UserMgr:
 
         try:
             response = requests.post(url, json=body, headers=headers)
-            return response.status_code == 201
-        except:
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}
+
+    @staticmethod
+    def DeleteUser(user_id):
+        if not PTERO_PANEL or not PTERO_API:
             return False
+
+        url = f"{PTERO_PANEL}/api/application/users/{user_id}"
+        headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {PTERO_API}",
+        }
+
+        try:
+            response = requests.delete(url, headers=headers)
+            return response.json()
+        except Exception as e:
+            return {"error": str(e)}
