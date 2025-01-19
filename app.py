@@ -18,6 +18,7 @@ async def load_cogs():
 @bot.event
 async def on_ready():
     await load_cogs()
+    await bot.tree.sync()
     print(f"Logged in as {bot.user}")
 
 bot.run(os.getenv("DISCORD_TOKEN"))
