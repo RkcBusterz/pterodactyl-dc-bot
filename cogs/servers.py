@@ -75,7 +75,9 @@ class ServersCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
+async def lol():
+    lol1 = await list_servers()
+    print(lol1)
 
     @app_commands.command(name="list_all_servers")
     async def _list(self,interaction: discord.Interaction):
@@ -104,5 +106,4 @@ class ServersCog(commands.Cog):
         else: 
             await interaction.response.send_message("You arent authorised in my database to create any server, hardware doesnt grow on trees.")
 async def setup(bot):
-
     await bot.add_cog(ServersCog(bot))
