@@ -28,28 +28,29 @@ async def list_servers():
         }
 
 
-async def create_server(name,user,egg,memory,disk,cpu):
+async def create_server(name,user,egg,memory,disk,cpu,docker,startup,variables):
     headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer apikey'
+        'Authorization': f'Bearer {api_key}'
     }
     data = {
         "name": name,
         "user": user,
         "egg": egg,
-        "docker_image": "quay.io/pterodactyl/core:java",
-        "startup": "java -Xms128M -Xmx128M -jar server.jar",
-        "environment": {
-            "MINECRAFT_VERSION": "latest",
-            "SERVER_JARFILE": "server.jar"
-        },
+        "docker_image": docker,
+        "startup": startup,
+        "environment": variables,
         "limits": {
             "memory": memory,
             "swap": 0,
             "disk": disk,
             "io": 500,
             "cpu": cpu
+        },
+        "feature_limits": {
+        "databases": 0,
+        "backups": 0
         },
         "allocation": {
             "default": random.randint(1, 100)
@@ -67,11 +68,15 @@ async def create_server(name,user,egg,memory,disk,cpu):
 with open('settings.json', 'r') as file:
      data = json.load(file)
      users = data["whitelisted_users"]
+     eggs = data["eggs"]
 
 
-class AdminCog(commands.Cog):
+class ServersCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+
+
+
     @app_commands.command(name="list_all_servers")
     async def _list(self,interaction: discord.Interaction):
         if any(item == f"{interaction.user.id}" for item in users):
@@ -84,9 +89,20 @@ class AdminCog(commands.Cog):
         else:
             await interaction.response.send_message("Who asked you to run this command ? Am I a slave ? Get lost!!!")
 
-    @app_commands.command(name="create_server")
-    async def _create(self,interaction: discord.Interaction):
-        pass
 
+    @app_commands.command(name="create_server")
+    @app_commands.choices(egg=[discord.app_commands.Choice(name=key, value=key) for key in eggs.keys()])
+    async def _create(self,interaction: discord.Interaction,egg: str, user: int, memory: int, cpu: int, storage: int,name: str = "Server"):
+        if any(item == f"{interaction.user.id}" for item in users):
+            try:
+                info = eggs[f'{egg}']
+                response = await create_server(name,user,info["id"],memory,storage,cpu,info["docker_image"],info["startup"],info["variables"])
+                print(response)
+                await interaction.response.send_message("Successfully created Server")
+            except:
+                await interaction.response.send_message("Unable to create server.")
+        else: 
+            await interaction.response.send_message("You arent authorised in my database to create any server, hardware doesnt grow on trees.")
 async def setup(bot):
-    await bot.add_cog(AdminCog(bot))
+
+    await bot.add_cog(ServersCog(bot))
