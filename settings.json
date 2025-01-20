@@ -1,3 +1,15 @@
 {
-    "whitelisted_users": ["933712445573324822","1319583634759614553"]
+    "whitelisted_users": ["933712445573324822","1319583634759614553"],
+    "eggs": {
+        "Paper": {"id":3,
+                "variables":{
+                    "MINECRAFT_VERSION": "latest",
+                    "SERVER_JARFILE": "server.jar",
+                    "BUILD_NUMBER": "latest"
+                    },
+                    "docker_image": "ghcr.io/pterodactyl/yolks:java_21",
+                    "startup": "java -Xms128M -XX:MaxRAMPercentage=95.0 -Dterminal.jline=false -Dterminal.ansi=true -jar {{SERVER_JARFILE}}"
+                    },
+                    "Python": 1
+            }
 }
